@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0,maximum-scale=1.0">
     <title>Document</title>
     <style>
+        body {
+            margin: 0;
+        }
+    
         .page {
             background-size: 100%;
         }
@@ -54,7 +58,7 @@
                 width: width,
                 height: height,
                 page: 53
-            });
+            }).css({ margin: margin });
         }
 
         var aspectRatio = 2333*2/3171;
@@ -62,17 +66,28 @@
         var counter = 0, $pages = $(".pages");
 
         function position() {
-            if (innerWidth / innerHeight > aspectRatio) { // landscape - blanks on sides
-                height = innerHeight;
+            var winWidth = innerWidth, winHeight = innerHeight;
+            if (innerWidth < innerHeight) {
+                winWidth = innerHeight;
+                winHeight = innerWidth;
+            }
+        
+            if (winWidth / winHeight > aspectRatio) { // landscape - blanks on sides
+                height = winHeight;
                 width = height * aspectRatio;
                 margin = "0 auto";
             } else { // portrait - blanks on top/bottom
-                width = innerWidth;
+                width = winWidth;
                 height = width / aspectRatio;
-                var halfMargin = (innerHeight - height) / 2;
+                var halfMargin = (winHeight - height) / 2;
                 margin = halfMargin + "px 0";
             }
-
+            
+            console.log("aspect ratio", aspectRatio);
+            console.log("w/h", t(winWidth / winHeight));
+            console.log("width", t(width));
+            console.log("height", t(height));
+            console.log("margin", t(margin));
             console.log("position (WxH): [" + t(innerWidth / innerHeight) + "] " + t(width) + " x " + t(height) + " // " + innerWidth + "x" + innerHeight);
 //            $pages.turn({ width: width, height: height });
 //             $pages.css({ margin: margin });
@@ -106,10 +121,6 @@
             } else if (e.key === "ArrowRight") {
                 $pages.turn("previous");
             }
-        });
-        
-        $(window).on("resize", function() {
-            $pages.turn("resize");
         });
         
     </script>
