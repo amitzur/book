@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0,maximum-scale=1.0">
+    <title>Document</title>
+    <style>
+        .page {
+            background-size: 100%;
+        }
+        
+        @media (orientation:landscape) {
+        .pages {
+            visibility: visible;
+        }
+        
+        .portrait-notice {
+            display: none;
+        }
+        }
+
+        @media (orientation:portrait) {
+        .pages {
+            visibility: hidden;
+            opacity: 0;
+        }
+        
+        .portrait-notice {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        }
+    </style>
+</head>
+
+<body>
+    <!--<div class="book">-->
+    <div class="pages"></div>
+    <!--</div>-->
+    <div class="portrait-notice">לסובב את הטלפון</div>
+
+
+    <script src="jquery.min.1.7.js"></script>
+    <script src="turn.js"></script>
+    <script>
+        function start() {
+            console.log("start", $(".pre-page img").length);
+            $(".pre-page img").css({ visibility: "visible", height: "100%", width: "100%", position: "static" });
+            $pages.turn({
+//                autoCenter: true,
+                width: width,
+                height: height,
+                page: 53
+            });
+        }
+
+        var aspectRatio = 2333*2/3171;
+        var width, height, margin;
+        var counter = 0, $pages = $(".pages");
+
+        function position() {
+            if (innerWidth / innerHeight > aspectRatio) { // landscape - blanks on sides
+                height = innerHeight;
+                width = height * aspectRatio;
+                margin = "0 auto";
+            } else { // portrait - blanks on top/bottom
+                width = innerWidth;
+                height = width / aspectRatio;
+                var halfMargin = (innerHeight - height) / 2;
+                margin = halfMargin + "px 0";
+            }
+
+            console.log("position (WxH): [" + t(innerWidth / innerHeight) + "] " + t(width) + " x " + t(height) + " // " + innerWidth + "x" + innerHeight);
+//            $pages.turn({ width: width, height: height });
+//             $pages.css({ margin: margin });
+        }
+
+        function t(n) {
+            if (n%1 === 0) return n;
+            return Number(n).toFixed(2);
+        }
+        
+        position();
+    
+        for (var i= 0,ii=52;i<=ii;i++){
+            var image = new Image();
+            image.src = "pages/" + i + ".jpg";
+            image.onload = function() {
+                console.log("counter", counter);
+                counter++;
+                if (counter === 52) {
+                    start();
+                }
+            };
+            image.style = 'visibility:hidden;position:absolute;width:0;height:0;';
+            $("<div class='pre-page'>").append(image).appendTo($pages);
+        }
+
+        $(document).on("keyup", function(e) {
+            console.log(e.key)
+            if (e.key === "ArrowLeft") {
+                $pages.turn("next");
+            } else if (e.key === "ArrowRight") {
+                $pages.turn("previous");
+            }
+        });
+        
+        $(window).on("resize", function() {
+            $pages.turn("resize");
+        });
+        
+    </script>
+</body>
+
+</html>
